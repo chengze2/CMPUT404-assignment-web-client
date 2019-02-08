@@ -90,7 +90,6 @@ class HTTPClient(object):
         hostname = url_components.hostname
         port = url_components.port
         path = url_components.path
-
         if(port == None):
             port = self.get_host_port(url)
         if(path == ""):
