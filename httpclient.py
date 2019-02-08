@@ -43,19 +43,28 @@ class HTTPClient(object):
         return None
 
     def get_code(self, data):
-        data_list = data.split("\r\n")
-        code = data_list[0].split(" ")[1]
-        return int(code)
+        try:
+            data_list = data.split("\r\n")
+            code = data_list[0].split(" ")[1]
+            return int(code)
+        except:
+            return None
 
     def get_headers(self,data):
-        data_list = data.split("\r\n\r\n")
-        header = data_list[0]
-        return header
+        try:
+            data_list = data.split("\r\n\r\n")
+            header = data_list[0]
+            return header
+        except:
+            None
 
     def get_body(self, data):
-        data_list = data.split("\r\n\r\n")
-        body = data_list[1]
-        return body
+        try:
+            data_list = data.split("\r\n\r\n")
+            body = data_list[1]
+            return body
+        except:
+            return None
     
     def sendall(self, data):
         self.socket.sendall(data.encode('utf-8'))
@@ -77,7 +86,7 @@ class HTTPClient(object):
 
     def GET(self, url, args=None):
         url_components = urlparse(url)
-        scheme = url_components.scheme
+        #scheme = url_components.scheme
         hostname = url_components.hostname
         port = url_components.port
         path = url_components.path
@@ -86,54 +95,21 @@ class HTTPClient(object):
             port = self.get_host_port(url)
         if(path == ""):
             path = "/"
-        '''
-        print("!!!!!!!!!!!!!!!!!!!!!!!!")
-        print("!!!!!!!!!!!!!!!!!!!!!!!!")
-        print(scheme)
-        print(hostname)
-        print(port)
-        print(path)
-        '''
         self.connect(hostname,port)
-
         request_payload = "GET {path} HTTP/1.1\r\n".format(path=path)
         request_payload += "Host: {host}:{port}\r\n\r\n".format(host=hostname,port=port)
-        
         self.sendall(request_payload)
         data = self.recvall(self.socket)
-
         code = self.get_code(data)
-        #header = self.get_headers(data)
         body = self.get_body(data)
-        '''
-        print("@@")
-        print(data)
-        print("@")
-        print(code)
-        print(body)
-        print("@@")
-
-        print('`````````````````')
-        print(request_payload)
-        print('`````````````````')
-        '''
         self.close()
         return HTTPResponse(code, body)
 
     def POST(self, url, args=None):
         url_components = urlparse(url)
-        scheme = url_components.scheme
         hostname = url_components.hostname
         port = url_components.port
         path = url_components.path
-        '''
-        print("!!!!!!!!!!!!!!!!!!!!!!!!")
-        print("!!!!!!!!!!!!!!!!!!!!!!!!")
-        print(scheme)
-        print(hostname)
-        print(port)
-        print(path)
-        '''
         content = ""
         try:
             for item in args.items():
@@ -142,32 +118,16 @@ class HTTPClient(object):
             content = content[:-1]
         except:
             pass
-
         self.connect(hostname,port)
-
         request_payload = "POST {path} HTTP/1.1\r\n".format(path=path)
         request_payload += "Host: {host}:{port}/\r\n".format(host=hostname,port=port,path=path)
-        request_payload += "Content-Length: {length}\r\n\r\n".format(length=len(content))
+        request_payload += "Content-Length: {length}\r\n".format(length=len(content))
+        request_payload += "Content-Type: application/x-www-form-urlencoded\r\n\r\n"
         request_payload += content + "\r\n"
-
         self.sendall(request_payload)
         data = self.recvall(self.socket)
-        '''
-        print("@")
-        print(data)
-        print("@")
-        '''
         code = self.get_code(data)
-        #header = self.get_headers(data)
         body = self.get_body(data)
-        '''
-        print('`````````````````')
-        print(path)
-        print(request_payload)
-        print(code)
-        print(body)
-        print('`````````````````')
-        '''
         self.close()
         return HTTPResponse(code, body)
 
