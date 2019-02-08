@@ -27,4 +27,6 @@ References
 ```https://www.w3.org/Protocols/rfc2616/rfc2616-sec6.html```
 ```https://docs.python.org/3/tutorial/datastructures.html```
 ```https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/POST```
+```https://uofa-cmput404.github.io/cmput404-slides/04-HTTP.html```
+```https://github.com/chengze2/cmput404_lab2.git```
 
